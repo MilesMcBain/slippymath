@@ -81,13 +81,14 @@ mapbox_query_string <-
          "?access_token=",
          Sys.getenv("MAPBOX_API_KEY"))
 
-pmap(tile_grid$tiles,
-     function(x, y, zoom){
-       outfile <- paste0(x, "_", y, "_", ".jpg")
-       curl_download(url = glue(mapbox_query_string),
-                     destfile = outfile)
-       outfile 
-     }, zoom = zoom)
+images <-
+  pmap(tile_grid$tiles,
+       function(x, y, zoom){
+         outfile <- paste0(x, "_", y, "_", ".jpg")
+         curl_download(url = glue(mapbox_query_string),
+                       destfile = outfile)
+         outfile 
+       }, zoom = zoom)
 ```
 
 Composite a list of images and a corresponding tile grid to a raster:
