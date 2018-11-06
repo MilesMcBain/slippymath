@@ -74,7 +74,6 @@ library(curl)
 library(glue)
 
 tile_grid <- bb_to_tg(uluru_bbox, max_tiles = 15)
-zoom <- tiles$zoom
 
 mapbox_query_string <-
   paste0("https://api.mapbox.com/v4/mapbox.satellite/{zoom}/{x}/{y}.jpg90",
@@ -84,11 +83,12 @@ mapbox_query_string <-
 images <-
   pmap(tile_grid$tiles,
        function(x, y, zoom){
-         outfile <- paste0(x, "_", y, "_", ".jpg")
+         outfile <- glue("{x}_{y}.jpg")
          curl_download(url = glue(mapbox_query_string),
                        destfile = outfile)
          outfile 
-       }, zoom = zoom)
+       },
+       zoom = tiles$zoom)
 ```
 
 Composite a list of images and a corresponding tile grid to a raster:
