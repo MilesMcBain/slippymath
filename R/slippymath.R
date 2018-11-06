@@ -16,5 +16,5 @@ latlon_to_tilenum<-function(lat_deg, lon_deg, zoom){
   xtile <- floor(x * n_tiles)
   ytile <- floor(y * n_tiles)
 
-  return( c(xtile, ytile))
+  list(x = xtile, y = ytile)
 }
