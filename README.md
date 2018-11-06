@@ -1,7 +1,7 @@
 # slippymath
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
-R functions for dealing with slippy map tile servers.
+R functions for dealing with slippy map tile servers (Google maps, Open Street Map, Mapbox, Stamen et. al.).
 
 # Usage
 
