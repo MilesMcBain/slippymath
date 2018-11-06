@@ -88,7 +88,7 @@ images <-
                        destfile = outfile)
          outfile 
        },
-       zoom = tiles$zoom)
+       zoom = tile_grid$zoom)
 ```
 
 Composite a list of images and a corresponding tile grid to a raster:
