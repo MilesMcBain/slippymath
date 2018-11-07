@@ -1,4 +1,6 @@
-radians <- function(angle_deg) angle_deg * pi /180
+radians <- function(angle_deg) angle_deg * pi / 180
+
+degrees <- function(angle_rad) (angle_rad * 180) / pi
 
 is_bbox <- function(obj){
   inherits(obj, "bbox") ||
@@ -7,9 +9,11 @@ is_bbox <- function(obj){
 
 is_bbox_vector <- function(obj){
   is.vector(obj) &&
-    lenfth(obj) == 4 &&
-    length(setdiff(names(tsta), c("xmin", "xmax", "ymin", "ymax"))) == 0
+    length(obj) == 4 &&
+    length(setdiff(names(obj), c("xmin", "xmax", "ymin", "ymax"))) == 0
 }
+
+is_tile_grid <- function(obj) inherits(obj, "tile_grid")
 
 assert_bbox <- function(obj){
   if (!is_bbox(obj)){

@@ -7,6 +7,8 @@ R functions for dealing with slippy map tile servers (Google maps, Open Street M
 
 Look at how many tiles you might need: 
 ```r
+library(sf)
+
 uluru_bbox <-
   st_bbox(c(xmin = 131.02084,
             xmax = 131.0535,
@@ -69,6 +71,7 @@ bb_to_tg(uluru_bbox, max_tiles = 15)
 Fetch a grid using your favourite tile server API. Here's a Mapbox example:
 
 ```r
+
 library(purrr)
 library(curl)
 library(glue)
@@ -85,7 +88,7 @@ images <-
        function(x, y, zoom){
          outfile <- glue("{x}_{y}.jpg")
          curl_download(url = glue(mapbox_query_string),
-                       destfile = outfile)
+                       destfile = outfile) 
          outfile 
        },
        zoom = tile_grid$zoom)
@@ -93,7 +96,10 @@ images <-
 
 Composite a list of images and a corresponding tile grid to a raster:
 
-```
-## TODO
-tg_composite()
+```r
+raster_out <- tg_composite(tile_grid, images)
+
+png("uluru.png")
+plotRGB(raster_out)
+dev.off()
 ```

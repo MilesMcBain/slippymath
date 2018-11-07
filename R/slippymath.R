@@ -1,5 +1,9 @@
+globalVariables(c(".global_sm_env"), "slippymath") #ignore this in R CMD checks
+.global_sm_env <- new.env(parent=emptyenv())
+.global_sm_env$WEB_MERCATOR_CRS <- sf::st_crs(3857)
+.global_sm_env$LATLON_CRS <- sf::st_crs(4326)
 
-latlon_to_tilenum<-function(lat_deg, lon_deg, zoom){
+latlon_to_tilenum <- function(lat_deg, lon_deg, zoom){
   ## Implementing slippy map spec as per https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
   lat_rad <- radians(lat_deg)
   lon_rad <- radians(lon_deg)
@@ -7,8 +11,8 @@ latlon_to_tilenum<-function(lat_deg, lon_deg, zoom){
   x <- lon_rad
   y <- asinh(tan(lat_rad))
 
-  x <- (1 + (x/pi))/2
-  y <- (1 - (y/pi))/2
+  x <- (1 + (x / pi))/2
+  y <- (1 - (y / pi))/2
 
   n_tiles <- 2^zoom
 
@@ -16,6 +20,18 @@ latlon_to_tilenum<-function(lat_deg, lon_deg, zoom){
   ytile <- floor(y * n_tiles)
 
   list(x = xtile, y = ytile)
+}
+
+tilenum_to_latlon <- function(x, y, zoom){
+  n_tiles <- 2^zoom
+
+  lon_rad <- (((x / n_tiles) * 2) - 1) * pi
+
+  merc_lat <- (1 - ((y / n_tiles) * 2)) * pi
+  lat_rad <- atan(sinh(merc_lat))
+
+  list(lat = degrees(lat_rad),
+       lon = degrees(lon_rad))
 }
 
 bb_to_tg <- function(bbox,
@@ -87,6 +103,49 @@ bb_tile_extent <- function(bbox, zoom){
   ## why y_min = max_tile$y here.
 }
 
-tg_bbs <- function(tile_grid){}
+tile_bb <- function(x, y, zoom){
+  bottom_left <- tilenum_to_latlon(x, y+1, zoom)
+  top_right <- tilenum_to_latlon(x+1, y, zoom)
 
-tg_composite <- function(tile_grid, images){}
+  bottom_left_point <- st_point(c(bottom_left$lon, bottom_left$lat))
+  top_right_point <-  st_point(c(top_right$lon, top_right$lat))
+
+  box_extent <- st_sfc(bottom_left_point,
+                       top_right_point,
+                       crs = .global_sm_env$LATLON_CRS)
+
+  box_mercator <- st_transform(box_extent,
+                               crs = .global_sm_env$WEB_MERCATOR_CRS)
+
+  st_bbox(box_mercator)
+}
+
+tg_bbs <- function(tile_grid){
+  if(!is_tile_grid(tile_grid)) stop("tile_grid must be of class tile_grid - output from bb_to_tg()")
+
+  purrr::pmap(.l = tile_grid$tiles,
+              .f = tile_bb,
+              zoom = tile_grid$zoom)
+}
+
+tg_composite <- function(tile_grid, images){
+
+  bricks <-
+    purrr::pmap(.l = list(x = tile_grid$tiles$x,
+                          y = tile_grid$tiles$y,
+                          image = images),
+                .f = function(x, y, image, zoom){
+                  tile_bbox <- tile_bb(x, y, zoom)
+                  raster_img <-
+                    raster::brick(image,
+                                  crs = sf::st_crs(tile_bbox)$proj4string)
+                  raster::extent(raster_img) <-
+                    raster::extent(tile_bbox[c("xmin", "xmax", "ymin", "ymax")])
+                  raster_img
+                },
+                zoom = tile_grid$zoom)
+
+  geo_refd_raster <- do.call(raster::merge, bricks)
+
+  geo_refd_raster
+}
