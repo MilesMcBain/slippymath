@@ -8,7 +8,8 @@ is_bbox <- function(obj){
 is_bbox_vector <- function(obj){
   is.vector(obj) &&
     length(obj) == 4 &&
-    length(setdiff(names(tsta), c("xmin", "xmax", "ymin", "ymax"))) == 0
+    ## FIXME
+    length(setdiff(names(obj), c("xmin", "xmax", "ymin", "ymax"))) == 0
 }
 
 assert_bbox <- function(obj){
