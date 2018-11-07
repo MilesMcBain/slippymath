@@ -39,7 +39,7 @@ slippy_cache <- function() {
 }
 
 url_to_cache <- function(x) {
-  base_filepath <- file.path(slippy_cache(), gsub("^//", "", gsub("[http\\:|https\\:]", "", x)))
+  base_filepath <- file.path(slippy_cache(), gsub("^//", "", gsub("^https\\:", "", gsub("^https\\:", "", x))))
   ## chuck off any ? junk
   unlist(lapply(strsplit(base_filepath, "\\?"), "[", 1L))
 }
