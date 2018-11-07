@@ -20,5 +20,5 @@ mercator_tile_extent <- function(tile_x, tile_y, zoom, tile_size = 256) {
   xlim <- -MAXEXTENT + (tile_x + c(0, 1)) * (z0_size/(2^zoom)) * tile_size
   ## upside down Ms. Jane
   ylim <- range(MAXEXTENT - (tile_y + c(0, 1) - 0) * (z0_size/(2^zoom)) * tile_size)
-  setNames(c(xlim, ylim), c("xmin", "xmax", "ymin", "ymax"))
+  stats::setNames(c(xlim, ylim), c("xmin", "xmax", "ymin", "ymax"))
 }
