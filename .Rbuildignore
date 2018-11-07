@@ -1,2 +1,4 @@
+^LICENSE\.md$
+^media$
 ^.*\.Rproj$
 ^\.Rproj\.user$

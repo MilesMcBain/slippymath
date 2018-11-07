@@ -5,6 +5,8 @@ R functions for dealing with slippy map tile servers (Google maps, Open Street M
 
 # Usage
 
+
+## Tile maths
 Look at how many tiles you might need: 
 ```r
 library(sf)
@@ -92,14 +94,25 @@ images <-
          outfile 
        },
        zoom = tile_grid$zoom)
+
 ```
 
-Composite a list of images and a corresponding tile grid to a raster:
+## Tile compositing
+
+You can composite a list of images and a corresponding tile grid to a spatially
+referenced raster, meaning you can plot over it with `tmap` etc.
 
 ```r
+library(raster)
+library(rgdal)
+
 raster_out <- tg_composite(tile_grid, images)
 
-png("uluru.png")
-plotRGB(raster_out)
-dev.off()
+rgdal::writeGDAL(as(raster_out,
+                    "SpatialGridDataFrame"), "uluru.png", driver = "PNG")
+
 ```
+Result:
+![](media/uluru.png)
+
+    © <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>
