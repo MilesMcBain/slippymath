@@ -13,6 +13,11 @@
 #' mapbox_query_string <- paste0("https://api.mapbox.com/v4/mapbox.satellite/{zoom}/{x}/{y}.jpg90",
 #' "?access_token=",
 #' Sys.getenv("MAPBOX_API_KEY"))
+#' @importFrom curl curl_download
+#' @importFrom fs dir_exists dir_create
+#' @importFrom glue glue
+#' @importFrom rappdirs user_cache_dir
+#' @importFrom purrr pmap
 down_loader <- function(x, query_string, clobber = FALSE) {
     purrr::pmap(x$tiles,
          function(x, y, zoom){

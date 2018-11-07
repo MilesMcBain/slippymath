@@ -1,3 +1,5 @@
+#' @importFrom tibble tibble
+#' @importFrom dplyr filter
 spherical_mercator <- function(provider) {
   #MAXEXTENT is the bounds between [-180, 180] and [-85.0511, 85.0511]
   tibble::tibble(provider = "mapbox",
