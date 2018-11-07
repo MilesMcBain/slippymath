@@ -133,14 +133,14 @@ tile_bb <- function(x, y, zoom){
   bottom_left <- tilenum_to_latlon(x, y+1, zoom)
   top_right <- tilenum_to_latlon(x+1, y, zoom)
 
-  bottom_left_point <- st_point(c(bottom_left$lon, bottom_left$lat))
-  top_right_point <-  st_point(c(top_right$lon, top_right$lat))
+  bottom_left_point <- sf::st_point(c(bottom_left$lon, bottom_left$lat))
+  top_right_point <-  sf::st_point(c(top_right$lon, top_right$lat))
 
-  box_extent <- st_sfc(bottom_left_point,
+  box_extent <- sf::st_sfc(bottom_left_point,
                        top_right_point,
                        crs = .global_sm_env$LATLON_CRS)
 
-  box_mercator <- st_transform(box_extent,
+  box_mercator <- sf::st_transform(box_extent,
                                crs = .global_sm_env$WEB_MERCATOR_CRS)
 
   st_bbox(box_mercator)
