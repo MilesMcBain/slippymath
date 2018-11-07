@@ -64,12 +64,12 @@ bb_to_tg <- function(bbox,
                      zoom = NULL,
                      max_tiles = NULL){
 
-  if (is_null(zoom) && is_null(max_tiles)){
+  if (purrr::is_null(zoom) && purrr::is_null(max_tiles)){
     stop("at least one of the zoom or max_tiles arugments must be supplied")
   }
 
   ## No zoom, we'll do a query and choose the best zoom for the max_tiles budget
-  if (is_null(zoom)){
+  if (purrr::is_null(zoom)){
     tile_query <- bb_tile_query(bbox, zoom_levels = 1:20)
     suitable_zooms <- tile_query$total_tiles <= max_tiles
     zoom <- max(which(suitable_zooms))
