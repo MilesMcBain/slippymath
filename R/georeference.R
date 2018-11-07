@@ -6,6 +6,7 @@ spherical_mercator <- function(provider) {
                  crs = glue::glue("+proj=merc +a={A} +b={A}")) %>%
     dplyr::filter(provider == provider)
 }
+#' @importFrom stats setNames
 mercator_tile_extent <- function(tile_x, tile_y, zoom, tile_size = 256) {
   if (any(!c(length(tile_x), length(tile_y), length(zoom), length(tile_size)) == 1)) {
     stop("tile_x, tile_y, zoom, tile_size must all be of length 1")

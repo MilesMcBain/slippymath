@@ -2,3 +2,4 @@
 
 export(bb_to_tg)
 export(down_loader)
+importFrom(stats,setNames)
