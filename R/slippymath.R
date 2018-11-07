@@ -3,6 +3,21 @@ globalVariables(c(".global_sm_env"), "slippymath") #ignore this in R CMD checks
 .global_sm_env$WEB_MERCATOR_CRS <- sf::st_crs(3857)
 .global_sm_env$LATLON_CRS <- sf::st_crs(4326)
 
+##' Convert latitude and longitude to slippy tile numbers
+##'
+##' Returns the Open Street Map slippy map tile numbers (x, y) the
+##' supplied latitude and longitude fall on, for a given zoom level.
+##'
+##' The point specified by `lat_deg` and `lon_deg` is assumed to be in ESPG:4326
+##' coordinate reference system.
+##' 
+##' @title latlon_to_tilenum
+##' @param lat_deg degrees latitude for point
+##' @param lon_deg degrees longitude for point
+##' @param zoom zoom level for tile calculation. Increasing zoom increases the
+##'   number of tiles.
+##' @return a list containing `x` and `y` - the tile numbers.
+##' @export
 latlon_to_tilenum <- function(lat_deg, lon_deg, zoom){
   ## Implementing slippy map spec as per https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
   lat_rad <- radians(lat_deg)
@@ -22,6 +37,17 @@ latlon_to_tilenum <- function(lat_deg, lon_deg, zoom){
   list(x = xtile, y = ytile)
 }
 
+##' Convert slippy map tiles numbers to latitude and longitude
+##'
+##' Returns the latitude and longitude of the top left corner of a slippy map tile
+##' specified by `x`, `y` for a given zoom level.
+##' @title  tilenum_to_latlon
+##' @param x slippy map tile number in x domain (left to right)
+##' @param y slippy map tile number in y domain (top to bottom)
+##' @param zoom the zoom level for the calculation. Increasing zoom increases
+##'   the number of tiles.
+##' @return a list containing `lat` and `lon` - latitude and longitude.
+##' @export
 tilenum_to_latlon <- function(x, y, zoom){
   n_tiles <- 2^zoom
 
