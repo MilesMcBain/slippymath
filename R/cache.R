@@ -16,7 +16,6 @@
 down_loader <- function(x, query_string, clobber = FALSE) {
     purrr::pmap(x$tiles,
          function(x, y, zoom){
-           #outfile <- glue("{x}_{y}.jpg")
            api_query <- glue::glue(query_string)
            outfile <- url_to_cache(api_query)
            if (!file.exists(outfile) || clobber) {
