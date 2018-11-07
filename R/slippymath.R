@@ -18,6 +18,7 @@ latlon_to_tilenum<-function(lat_deg, lon_deg, zoom){
   list(x = xtile, y = ytile)
 }
 
+#' @export
 bb_to_tg <- function(bbox,
                      zoom = NULL,
                      max_tiles = NULL){
