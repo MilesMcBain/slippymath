@@ -122,8 +122,8 @@ library(rgdal)
 
 raster_out <- tg_composite(tile_grid, images)
 
-rgdal::writeGDAL(as(raster_out,
-                    "SpatialGridDataFrame"), "uluru.png", driver = "PNG")
+## A convenient wrapper for raster image exports.
+raster_to_png(raster_out, "uluru.png")
 
 ```
 Result:
