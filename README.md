@@ -1,5 +1,5 @@
 # slippymath
-[[![Travis build status](https://travis-ci.org/MilesMcBain/slippymath.svg?branch=master)](https://travis-ci.org/milesmcbain/slippymath) [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/milesmcbain/slippymath?branch=master&svg=true)](https://ci.appveyor.com/project/MilesMcBain/slippymath) [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing) [![CRAN status](https://www.r-pkg.org/badges/version/slippymath)](https://cran.r-project.org/package=slippymath)
+[![Travis build status](https://travis-ci.org/MilesMcBain/slippymath.svg?branch=master)](https://travis-ci.org/MilesMcBain/slippymath) [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/MilesMcBain/slippymath?branch=master&svg=true)](https://ci.appveyor.com/project/MilesMcBain/slippymath) [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing) [![CRAN status](https://www.r-pkg.org/badges/version/slippymath)](https://cran.r-project.org/package=slippymath)
 
 R functions for dealing with slippy map tile servers (Google maps, Open Street
 Map, Mapbox, Stamen et. al.
