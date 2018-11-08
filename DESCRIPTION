@@ -4,7 +4,7 @@ Version: 0.1.0
 Authors@R: c(
     person("Miles", "McBain", email = "miles.mcbain@gmail.com", role = c("aut", "cre"), 
     comment = c(ORCID = "0000-0003-2865-2548")),
-    person("Michael","Sumner", email = "mdsumner@gmail.com", role = c("ctb")))
+    person("Michael","Sumner", email = "mdsumner@gmail.com", role = c("aut")))
 Description: Provides functions for performing common tasks when working with
   slippy map tile service APIs e.g. Google maps, Open Street Map, Mapbox, Stamen,
   among others. Functionality includes Converting from latitude and longitude to
