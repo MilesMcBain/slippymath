@@ -94,7 +94,7 @@ bb_to_tg <- function(bbox,
   if (purrr::is_null(zoom)){
     tile_query <- bb_tile_query(bbox, zoom_levels = 0:19)
     suitable_zooms <- tile_query$total_tiles <= max_tiles
-    zoom <- max(which(suitable_zooms))
+    zoom <- tile_query$zoom[max(which(suitable_zooms))]
   }
 
   tile_extent <- bb_tile_extent(bbox, zoom)
