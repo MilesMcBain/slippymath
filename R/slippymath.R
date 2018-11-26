@@ -92,7 +92,7 @@ bb_to_tg <- function(bbox,
 
   ## No zoom, we'll do a query and choose the best zoom for the max_tiles budget
   if (purrr::is_null(zoom)){
-    tile_query <- bb_tile_query(bbox, zoom_levels = 1:20)
+    tile_query <- bb_tile_query(bbox, zoom_levels = 0:19)
     suitable_zooms <- tile_query$total_tiles <= max_tiles
     zoom <- max(which(suitable_zooms))
   }
@@ -102,7 +102,7 @@ bb_to_tg <- function(bbox,
   x_tiles <- tile_extent$x_min:tile_extent$x_max
   y_tiles <- tile_extent$y_min:tile_extent$y_max
 
-  if((length(x_tiles) * length(y_tiles)) > max_tiles){
+  if(!purrr::is_null(max_tiles) && (length(x_tiles) * length(y_tiles)) > max_tiles){
     stop("Bounding box needed more than max_tiles at specified zoom level. Check with bbox_tile_query(bbox)")
   }
 
