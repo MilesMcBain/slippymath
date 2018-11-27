@@ -34,8 +34,7 @@ test_that("tile cascade smaller extent works", {
                          x_dim = c(1, 1, 1, 1, 1, 2, 3, 5, 8, 15, 29, 58, 115, 229, 456, 911, 1821, 3642, 7283, 14565),
                          total_tiles = c(1, 1, 1, 1, 1, 2, 3, 5, 16, 60, 232, 928, 3565, 14198, 56088, 224106, 894111,
                                          3572802, 14281963, 57109365),
-                         zoom = 0:19), row.names = c(NA, -20L), class = c("tbl_df",
-                                                                                                                                                                                                                                                                                                                                               "tbl", "data.frame"))
+                         zoom = 0:19), row.names = c(NA, -20L), class = c("data.frame"))
  expect_equal(levs_now, levs)
 })
 

@@ -43,3 +43,9 @@ raster_to_png <- function(tile_raster, file_path){
                    file_path,
                    driver = "PNG")
 }
+
+
+lol_to_df <- function(lol){
+  lov <- purrr::map(purrr::transpose(lol), unlist)
+  purrr::lift_dl(data.frame)(lov)
+}

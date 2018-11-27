@@ -132,8 +132,10 @@ bb_to_tg <- function(bbox,
 ##' @export
 bb_tile_query <- function(bbox, zoom_levels = 2:18){
 
-  extents_at_zooms <- purrr::map_dfr(zoom_levels,
+  extents_at_zooms <- purrr::map(zoom_levels,
                                  ~bb_tile_extent(bbox, .))
+
+  extents_at_zooms <- lol_to_df(extents_at_zooms)
 
   extents_at_zooms$y_dim <-
     abs(extents_at_zooms$y_max - extents_at_zooms$y_min) + 1
@@ -144,7 +146,6 @@ bb_tile_query <- function(bbox, zoom_levels = 2:18){
   extents_at_zooms$zoom <- zoom_levels
 
   extents_at_zooms
-
 }
 
 ##' Convert a bounding box from latitude and longitude to tile numbers
