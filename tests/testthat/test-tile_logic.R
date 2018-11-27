@@ -2,6 +2,7 @@ context("test-tile_logic")
 
 
 test_that("tile cascade works", {
+
   bbox <-  c(xmin = -180, xmax = 180, ymin = -85.0511, ymax = 85.0511)
   levs <- slippymath::bb_tile_query(bbox, zoom_levels = 0:19)
 
@@ -35,7 +36,7 @@ test_that("tile cascade smaller extent works", {
                                          3572802, 14281963, 57109365),
                          zoom = 0:19), row.names = c(NA, -20L), class = c("tbl_df",
                                                                                                                                                                                                                                                                                                                                                "tbl", "data.frame"))
-  expect_equal(levs_now, levs)
+ expect_equal(levs_now, levs)
 })
 
 test_that("whole zoom 0 tile logic works", {

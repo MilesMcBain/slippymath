@@ -31,8 +31,10 @@ latlon_to_tilenum <- function(lat_deg, lon_deg, zoom){
 
   n_tiles <- 2^zoom
 
-  xtile <- floor(x * n_tiles)
-  ytile <- floor(y * n_tiles)
+  ## The values are clamped to prevent problems at the extent boundaries. Eg 180
+  ## degrees lon which would lon_rad of pi.
+  xtile <- sm_clamp(floor(x * n_tiles), 0, n_tiles-1)
+  ytile <- sm_clamp(floor(y * n_tiles), 0, n_tiles-1)
 
   list(x = xtile, y = ytile)
 }
