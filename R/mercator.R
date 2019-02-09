@@ -3,7 +3,7 @@ globalVariables(c("A", "MAXEXTENT"), "slippymath") #ignore this in R CMD checks
 # Convert lon/lat values to 900913 x/y.
 A <- 6378137
 MAXEXTENT <- 20037508.342789244;
-#' clamp values within range min/max
+# clamp values within range min/max
 sm_clamp <- function(x, mn, mx) {
   x[x < mn] <- mn
   x[x > mx] <- mx
@@ -20,7 +20,7 @@ sm_clamp <- function(x, mn, mx) {
 #' @aliases merc_to_lonlat
 lonlat_to_merc <- function(ll) {
   xy <-
-    cbind(A * radians(ll[,1]),
+      cbind(A * radians(ll[,1]),
           A * log(tan((pi*0.25) + (0.5 * radians(ll[,2])))))
   ## if xy value is beyond maxextent (e.g. poles), return maxextent.
   xy[, 1] <- sm_clamp(xy[, 1], -MAXEXTENT, MAXEXTENT)

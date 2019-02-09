@@ -1,65 +1,69 @@
 globalVariables(c(".global_sm_env"), "slippymath") #ignore this in R CMD checks
 .global_sm_env <- new.env(parent=emptyenv())
-.global_sm_env$WEB_MERCATOR_CRS <- sf::st_crs(3857)
-.global_sm_env$LATLON_CRS <- sf::st_crs(4326)
 
-##' Convert latitude and longitude to slippy tile numbers
+.global_sm_env$WEB_MERCATOR_CRS <- structure(list(epsg = 3857L, proj4string = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs"), class = "crs")
+## sf::st_crs(3857)
+
+.global_sm_env$LONLAT_CRS <- structure(list(epsg = 4326L, proj4string = "+proj=longlat +datum=WGS84 +no_defs"), class = "crs")
+## sf::st_crs(4326)
+
+##' Convert longitude and latitude to slippy tile numbers
 ##'
 ##' Returns the Open Street Map slippy map tile numbers (x, y) the
 ##' supplied latitude and longitude fall on, for a given zoom level.
 ##'
-##' The point specified by `lat_deg` and `lon_deg` is assumed to be in ESPG:4326
+##' The point specified by lon_deg` and `lat_deg` is assumed to be in ESPG:4326
 ##' coordinate reference system.
 ##'
-##' @title latlon_to_tilenum
-##' @param lat_deg degrees latitude for point
+##' @title lonlat_to_tilenum
 ##' @param lon_deg degrees longitude for point
+##' @param lat_deg degrees latitude for point
 ##' @param zoom zoom level for tile calculation. Increasing zoom increases the
 ##'   number of tiles.
 ##' @return a list containing `x` and `y` - the tile numbers.
 ##' @export
-latlon_to_tilenum <- function(lat_deg, lon_deg, zoom){
-  ## Implementing slippy map spec as per https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
-  lat_rad <- radians(lat_deg)
-  lon_rad <- radians(lon_deg)
+lonlat_to_tilenum <- function(lon_deg, lat_deg, zoom){
+    ## Implementing slippy map spec as per https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+    lon_rad <- radians(lon_deg)
+    lat_rad <- radians(lat_deg)
 
-  x <- lon_rad
-  y <- asinh(tan(lat_rad))
+    x <- lon_rad
+    y <- asinh(tan(lat_rad))
 
-  x <- (1 + (x / pi))/2
-  y <- (1 - (y / pi))/2
+    x <- (1 + (x / pi))/2
+    y <- (1 - (y / pi))/2
 
-  n_tiles <- 2^zoom
+    n_tiles <- 2^zoom
 
-  ## The values are clamped to prevent problems at the extent boundaries. Eg 180
-  ## degrees lon which would lon_rad of pi.
-  xtile <- sm_clamp(floor(x * n_tiles), 0, n_tiles-1)
-  ytile <- sm_clamp(floor(y * n_tiles), 0, n_tiles-1)
+    ## The values are clamped to prevent problems at the extent boundaries. Eg 180
+    ## degrees lon which would lon_rad of pi.
+    xtile <- sm_clamp(floor(x * n_tiles), 0, n_tiles-1)
+    ytile <- sm_clamp(floor(y * n_tiles), 0, n_tiles-1)
 
-  list(x = xtile, y = ytile)
+    list(x = xtile, y = ytile)
 }
 
 ##' Convert slippy map tiles numbers to latitude and longitude
 ##'
 ##' Returns the latitude and longitude of the top left corner of a slippy map tile
 ##' specified by `x`, `y` for a given zoom level.
-##' @title  tilenum_to_latlon
+##' @title  tilenum_to_lonlat
 ##' @param x slippy map tile number in x domain (left to right)
 ##' @param y slippy map tile number in y domain (top to bottom)
 ##' @param zoom the zoom level for the calculation. Increasing zoom increases
 ##'   the number of tiles.
 ##' @return a list containing `lat` and `lon` - latitude and longitude.
 ##' @export
-tilenum_to_latlon <- function(x, y, zoom){
-  n_tiles <- 2^zoom
+tilenum_to_lonlat <- function(x, y, zoom){
+    n_tiles <- 2^zoom
 
-  lon_rad <- (((x / n_tiles) * 2) - 1) * pi
+    lon_rad <- (((x / n_tiles) * 2) - 1) * pi
 
-  merc_lat <- (1 - ((y / n_tiles) * 2)) * pi
-  lat_rad <- atan(sinh(merc_lat))
+    merc_lat <- (1 - ((y / n_tiles) * 2)) * pi
+    lat_rad <- atan(sinh(merc_lat))
 
-  list(lat = degrees(lat_rad),
-       lon = degrees(lon_rad))
+    list(lon = degrees(lon_rad),
+         lat = degrees(lat_rad))
 }
 
 ##' Bounding box to tile grid
@@ -88,33 +92,33 @@ bb_to_tg <- function(bbox,
                      zoom = NULL,
                      max_tiles = NULL){
 
-  if (purrr::is_null(zoom) && purrr::is_null(max_tiles)){
-    stop("at least one of the zoom or max_tiles arugments must be supplied")
-  }
+    if (purrr::is_null(zoom) && purrr::is_null(max_tiles)){
+        stop("at least one of the zoom or max_tiles arugments must be supplied")
+    }
 
-  ## No zoom, we'll do a query and choose the best zoom for the max_tiles budget
-  if (purrr::is_null(zoom)){
-    tile_query <- bb_tile_query(bbox, zoom_levels = 0:19)
-    suitable_zooms <- tile_query$total_tiles <= max_tiles
-    zoom <- tile_query$zoom[max(which(suitable_zooms))]
-  }
+    ## No zoom, we'll do a query and choose the best zoom for the max_tiles budget
+    if (purrr::is_null(zoom)){
+        tile_query <- bb_tile_query(bbox, zoom_levels = 0:19)
+        suitable_zooms <- tile_query$total_tiles <= max_tiles
+        zoom <- tile_query$zoom[max(which(suitable_zooms))]
+    }
 
-  tile_extent <- bb_tile_extent(bbox, zoom)
+    tile_extent <- bb_tile_extent(bbox, zoom)
 
-  x_tiles <- tile_extent$x_min:tile_extent$x_max
-  y_tiles <- tile_extent$y_min:tile_extent$y_max
+    x_tiles <- tile_extent$x_min:tile_extent$x_max
+    y_tiles <- tile_extent$y_min:tile_extent$y_max
 
-  if(!purrr::is_null(max_tiles) && (length(x_tiles) * length(y_tiles)) > max_tiles){
-    stop("Bounding box needed more than max_tiles at specified zoom level. Check with bbox_tile_query(bbox)")
-  }
+    if(!purrr::is_null(max_tiles) && (length(x_tiles) * length(y_tiles)) > max_tiles){
+        stop("Bounding box needed more than max_tiles at specified zoom level. Check with bbox_tile_query(bbox)")
+    }
 
-  tile_grid <-
-    list(
-      tiles = expand.grid(x = x_tiles, y = y_tiles),
-      zoom = zoom)
-  class(tile_grid) <- "tile_grid"
+    tile_grid <-
+        list(
+            tiles = expand.grid(x = x_tiles, y = y_tiles),
+            zoom = zoom)
+    class(tile_grid) <- "tile_grid"
 
-  tile_grid
+    tile_grid
 }
 
 ##' Bounding box tile query
@@ -132,20 +136,20 @@ bb_to_tg <- function(bbox,
 ##' @export
 bb_tile_query <- function(bbox, zoom_levels = 2:18){
 
-  extents_at_zooms <- purrr::map(zoom_levels,
-                                 ~bb_tile_extent(bbox, .))
+    extents_at_zooms <- purrr::map(zoom_levels,
+                                   ~bb_tile_extent(bbox, .))
 
-  extents_at_zooms <- lol_to_df(extents_at_zooms)
+    extents_at_zooms <- lol_to_df(extents_at_zooms)
 
-  extents_at_zooms$y_dim <-
-    abs(extents_at_zooms$y_max - extents_at_zooms$y_min) + 1
-  extents_at_zooms$x_dim <-
-    abs(extents_at_zooms$x_max - extents_at_zooms$x_min) + 1
-  extents_at_zooms$total_tiles <-
-    extents_at_zooms$y_dim * extents_at_zooms$x_dim
-  extents_at_zooms$zoom <- zoom_levels
+    extents_at_zooms$y_dim <-
+        abs(extents_at_zooms$y_max - extents_at_zooms$y_min) + 1
+    extents_at_zooms$x_dim <-
+        abs(extents_at_zooms$x_max - extents_at_zooms$x_min) + 1
+    extents_at_zooms$total_tiles <-
+        extents_at_zooms$y_dim * extents_at_zooms$x_dim
+    extents_at_zooms$zoom <- zoom_levels
 
-  extents_at_zooms
+    extents_at_zooms
 }
 
 ##' Convert a bounding box from latitude and longitude to tile numbers
@@ -161,21 +165,21 @@ bb_tile_query <- function(bbox, zoom_levels = 2:18){
 ##' @return a list of `x_min`, `y_min`, `x_max`, `y_max`
 ##' @export
 bb_tile_extent <- function(bbox, zoom){
-  assert_bbox(bbox)
+    assert_bbox(bbox)
 
-  min_tile <- latlon_to_tilenum(lat_deg = bbox["ymin"],
-                                lon_deg = bbox["xmin"], zoom)
-  max_tile <- latlon_to_tilenum(lat_deg = bbox["ymax"],
-                                lon_deg = bbox["xmax"], zoom)
+    min_tile <- lonlat_to_tilenum(lat_deg = bbox["ymin"],
+                                  lon_deg = bbox["xmin"], zoom)
+    max_tile <- lonlat_to_tilenum(lat_deg = bbox["ymax"],
+                                  lon_deg = bbox["xmax"], zoom)
 
-  list(x_min = min_tile$x,
-       y_min = max_tile$y,
-       x_max = max_tile$x,
-       y_max = min_tile$y)
+    list(x_min = min_tile$x,
+         y_min = max_tile$y,
+         x_max = max_tile$x,
+         y_max = min_tile$y)
 
-  ## Note tile numbers start at 0 in the north and increase going south. The
-  ## have the opposite polarity to latitude which increases going north. This is
-  ## why y_min = max_tile$y here.
+    ## Note tile numbers start at 0 in the north and increase going south. The
+    ## have the opposite polarity to latitude which increases going north. This is
+    ## why y_min = max_tile$y here.
 }
 
 ##' Calculate the bounding box for a tile in latitude and longitude
@@ -191,21 +195,23 @@ bb_tile_extent <- function(bbox, zoom){
 ##' @return an sf bbox object.
 ##' @export
 tile_bb <- function(x, y, zoom){
-  bottom_left <- tilenum_to_latlon(x, y+1, zoom)
-  top_right <- tilenum_to_latlon(x+1, y, zoom)
 
-  bottom_left_point <- sf::st_point(c(bottom_left$lon, bottom_left$lat))
-  top_right_point <-  sf::st_point(c(top_right$lon, top_right$lat))
+    bottom_left <-
+        lonlat_to_merc(t(as.matrix(unlist(tilenum_to_lonlat(x, y+1, zoom)))))
+    
+    top_right <-
+        lonlat_to_merc(t(as.matrix(unlist(tilenum_to_lonlat(x+1, y, zoom)))))
 
-  box_extent <- sf::st_sfc(bottom_left_point,
-                       top_right_point,
-                       crs = .global_sm_env$LATLON_CRS)
+    structure(c(xmin = bottom_left[[1]],
+                ymin = bottom_left[[2]],
+                xmax = top_right[[1]],
+                ymax = top_right[[2]]),
+              class = "bbox",
+              crs = .global_sm_env$WEB_MERCATOR_CRS)
+ }   
 
-  box_mercator <- sf::st_transform(box_extent,
-                               crs = .global_sm_env$WEB_MERCATOR_CRS)
 
-  sf::st_bbox(box_mercator)
-}
+
 
 ##' Get tile grid bounding boxes
 ##'
@@ -221,11 +227,11 @@ tile_bb <- function(x, y, zoom){
 ##' @return a list of sf bounding box objects in the corresponding order to the tiles in `tile_grid`
 ##' @export
 tg_bbs <- function(tile_grid){
-  if(!is_tile_grid(tile_grid)) stop("tile_grid must be of class tile_grid - output from bb_to_tg()")
+    if(!is_tile_grid(tile_grid)) stop("tile_grid must be of class tile_grid - output from bb_to_tg()")
 
-  purrr::pmap(.l = tile_grid$tiles,
-              .f = tile_bb,
-              zoom = tile_grid$zoom)
+    purrr::pmap(.l = tile_grid$tiles,
+                .f = tile_bb,
+                zoom = tile_grid$zoom)
 }
 
 ##' Composite a list of images using tile_grid data.
@@ -245,22 +251,22 @@ tg_bbs <- function(tile_grid){
 ##' @export
 tg_composite <- function(tile_grid, images){
 
-  bricks <-
-    purrr::pmap(.l = list(x = tile_grid$tiles$x,
-                          y = tile_grid$tiles$y,
-                          image = images),
-                .f = function(x, y, image, zoom){
-                  tile_bbox <- tile_bb(x, y, zoom)
-                  raster_img <-
-                    raster::brick(image,
-                                  crs = sf::st_crs(tile_bbox)$proj4string)
-                  raster::extent(raster_img) <-
-                    raster::extent(tile_bbox[c("xmin", "xmax", "ymin", "ymax")])
-                  raster_img
-                },
-                zoom = tile_grid$zoom)
+    bricks <-
+        purrr::pmap(.l = list(x = tile_grid$tiles$x,
+                              y = tile_grid$tiles$y,
+                              image = images),
+                    .f = function(x, y, image, zoom){
+                        tile_bbox <- tile_bb(x, y, zoom)
+                        raster_img <-
+                            raster::brick(image,
+                                          crs = attr(tile_bbox, "crs")$proj4string)
+                        raster::extent(raster_img) <-
+                            raster::extent(tile_bbox[c("xmin", "xmax", "ymin", "ymax")])
+                        raster_img
+                    },
+                    zoom = tile_grid$zoom)
 
-  geo_refd_raster <- do.call(raster::merge, bricks)
-
-  geo_refd_raster
+    geo_refd_raster <- do.call(raster::merge, bricks)
+    
+    geo_refd_raster
 }
