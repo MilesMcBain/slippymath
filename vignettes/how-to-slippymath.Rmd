@@ -1,0 +1,134 @@
+---
+title: "How to Slippymath"
+author: "Miles McBain"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+`slippymath` provides tools to assist your work with slippy map tile servers and the map tiles they provide. The main things it can help with are:
+* determining what zoom level to use
+* identifying the tiles you need to plot your data over
+* identifying where lonlat coordinates fall in tile space
+* determining the bounding boxes of tiles
+* compositing tiles into a single spatially referenced raster.
+
+Downloading tiles does not get a built-in helper. This is to make `slippymath`
+as service agnostic as possible. There is an example of downloading from Mapbox
+in the README. You may also enjoy the
+[`ceramic`](https://github.com/hypertidy/ceramic) package by Michael Sumner.
+
+## Determining zoom level
+
+The main assumption `slippymath` makes is that you can calculate a bounding box
+for your spatial data. Most spatial tools have this capability - see
+`sf::st_bbox()`.
+
+Given a bounding box in longitude and latitude (EPSG: 4326), you can execute a
+'tile query' to see how many slippy map tiles your data would occupy at various
+zoom levels:
+
+```{r}
+library(slippymath)
+
+uluru_bbox <-
+    c(xmin = 131.02084,
+      xmax = 131.0535,
+      ymin = -25.35461,
+      ymax = -25.33568)
+
+bb_tile_query(uluru_bbox)
+```
+
+When choosing your zoom level consider: Tiles are 256 x 256 pixel squares which
+roughly range in size from 30 - 40kb. 100's of tiles will be 10's of megabytes.
+You may also want to check rate limits imposed by the server you intend to pull
+the tiles from.
+
+`slippymath` can also choose a zoom level for your tiles, given a tile budget. See below.
+
+## Identifying tiles to plot over
+
+`slippymath` calls the set of tiles you need to plot all your data over a "Tile
+Grid" or `tg` for short. You can get a tile grid given a bounding box and tile
+zoom level OR a bounding box and tile budget (the zoom will be chosen to fit the
+budget).
+
+For example using the Uluru bounding box from above and zoom level 14:
+
+```{r}
+bb_to_tg(uluru_bbox, zoom = 14)
+```
+
+And using the same bounding box with a budget of 15 tiles:
+
+```{r}
+bb_to_tg(uluru_bbox, max_tiles = 15)
+```
+
+A tile grid is an object that contains a dataframe of tile coordinates (`$tiles`) and a `$zoom` level.
+
+## Identifying the tile for a single point
+
+Occasionally it may make sense to find the tile at a given zoom for a single
+point. `slippymath` has functions to convert between longitude and latitude tile
+coordinate space:
+
+```{r}
+lonlat_to_tilenum(131.02084, -25.35461, zoom = 14)
+
+tilenum_to_lonlat(14154, 9385, zoom = 14)
+```
+
+In this example, the exact lon lat we started with is not returned in the
+conversion from tile coordinate space. The lon lat returned is always the top
+left corner point of the tile.
+
+## Determining tile bounding boxes
+
+Once you have tiles, you will likely want to know their spatial bounding boxes
+as this is essential for compositing them. If you use the built-in compositing
+function, this is taken care of for you.
+
+Find the bounding boxes of a tile grid like so:
+
+```{r}
+uluru_grid <- bb_to_tg(uluru_bbox, max_tiles = 15)
+tg_bbs(uluru_grid)
+
+## for a single tile use tg_bb()
+```
+
+Slippy maps use a special mercator projection: EPSG: 3857. The tile bounding
+boxes are expressed in this projection.
+
+## Compositing tiles to a spatial raster
+
+A simple function to composite tiles to a single raster with the correct spatial
+extent (again in the EPSG 3857 projection) is provided. It constructs individual
+raster and subsequently calls `raster::merge` which has issues with manual
+calls to `gc` which can slow things down with many tiles.
+
+To composite, it is assumed you have a tile grid object, and a list of image
+files that correspond in order to the tiles in the tile grid. See the README
+example for a way to download tiles and get such a list.
+
+```{r, eval=FALSE}
+raster_out <- tg_composite(tile_grid, images)
+```
+
+Finally a convenience function is provided to convert the raster to a .png if needed:
+
+```{r, eval=FALSE}
+raster_to_png(raster_out, "uluru.png")
+```
