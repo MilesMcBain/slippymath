@@ -1,0 +1,41 @@
+---
+title: "Fetching elevation data from Mapbox"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+There are some slippy map tile providers that can serve you tiles that represent
+Digital Elevation Model (DEM) data, rather than map imagery. This is the kind of
+data you want to make 3D maps with `rayshader` or `quadmesh`. Mapbox have an API
+for DEM tiles called [Mapbox
+Terrain-RGB](https://docs.mapbox.com/help/troubleshooting/access-elevation-data/#mapbox-terrain-rgb)
+that we will use in this example.
+
+
+## Get a Mapbox API key
+
+Sign up for Mapbox and generate yourself an API access token. For my testing I
+have used a 'public' token with `styles:tiles`. Add that API token to your
+.Renviron file (in your home directory) as:
+
+```
+MAPBOX_API_KEY=<YOUR REALLY LONG TOKEN HERE>
+```
+
+## Fetch the RGB tiles for your bounding box
+
+## Converting RGB tiles to DEM tiles
+
+## Rendering DEM image in 3D
