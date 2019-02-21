@@ -36,6 +36,61 @@ MAPBOX_API_KEY=<YOUR REALLY LONG TOKEN HERE>
 
 ## Fetch the RGB tiles for your bounding box
 
-## Converting RGB tiles to DEM tiles
+How many tiles?
 
+```{r}
+library(slippymath)
+library(glue)
+library(purrr)
+library(curl)
+
+tibrogargan<- c(xmin = 152.938485, ymin = -26.93345, xmax = 152.956467, 
+               ymax = -26.921463)
+
+slippymath::bb_tile_query(tibrogargan)
+
+```
+
+It's a small area so we don't need a lot. 9 tiles as zoom 15 looks good. Let's get the tile grid.
+
+```{r}
+tibrogargan_grid <- bb_to_tg(tibrogargan, zoom = 15)
+```
+
+Now we'll fetch the tiles from Mapbox. 
+
+```{r}
+mapbox_query_string <-
+paste0("https://api.mapbox.com/v4/mapbox.terrain-rgb/{zoom}/{x}/{y}.jpg90",
+       "?access_token=",
+       Sys.getenv("MAPBOX_API_KEY"))
+
+tibro_tiles <-
+pmap(.l = tibrogargan_grid$tiles,
+     zoom = tibrogargan_grid$zoom,
+
+     .f = function(x, y, zoom){
+       outfile <- glue("{x}_{y}.jpg")
+       curl_download(url = glue(mapbox_query_string),
+            destfile = outfile)
+       outfile
+     }
+     )
+```
+## Stitch tiles into a raster
+
+```{r}
+
+```
+
+
+## Converting RGB tiles to DEM tiles
+```{r}
+
+decode_elevation <- function(dat,...) {
+  height <-  -10000 + ((dat[[1]] * 256 * 256 + dat[[2]] * 256 + dat[[3]]) * 0.1)
+  projection(height) <- "+proj=merc +a=6378137 +b=6378137"
+  height
+}
+```
 ## Rendering DEM image in 3D
