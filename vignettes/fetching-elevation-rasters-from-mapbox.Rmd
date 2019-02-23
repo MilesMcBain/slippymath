@@ -40,9 +40,6 @@ How many tiles?
 
 ```{r}
 library(slippymath)
-library(glue)
-library(purrr)
-library(curl)
 
 tibrogargan<- c(xmin = 152.938485, ymin = -26.93345, xmax = 152.956467, 
                ymax = -26.921463)
@@ -59,7 +56,11 @@ tibrogargan_grid <- bb_to_tg(tibrogargan, zoom = 15)
 
 Now we'll fetch the tiles from Mapbox. 
 
-```{r}
+```{r, eval=FALSE}
+library(glue)
+library(purrr)
+library(curl)
+
 mapbox_query_string <-
 paste0("https://api.mapbox.com/v4/mapbox.terrain-rgb/{zoom}/{x}/{y}.jpg90",
        "?access_token=",
@@ -79,18 +80,76 @@ pmap(.l = tibrogargan_grid$tiles,
 ```
 ## Stitch tiles into a raster
 
-```{r}
+We composite the images to raster with `tg_composite` and view the raster:
 
+```{r, eval=FALSE}
+tibrogargan_raster <- slippymath::tg_composite(tibrogargan_grid, tibro_tiles)
+raster::plot(tibrogargan_raster)
 ```
+![]("./tibrogargan_layers.png")
 
+
+We see this mix of layers including a psychedelic blue-green
+RGB landscape because in `terrain-rgb` tiles, the RGB values to provide
+additional precision to the elevation information. We'll decode this in the next
+section.
 
 ## Converting RGB tiles to DEM tiles
-```{r}
 
-decode_elevation <- function(dat,...) {
+Mapbox provide [a formula](https://docs.mapbox.com/help/troubleshooting/access-elevation-data/#decode-data) to decode the RGB values to elevation. This was implemented in the function below by Michael Sumner.
+
+```{r, eval=FALSE}
+
+decode_elevation <- function(dat) {
   height <-  -10000 + ((dat[[1]] * 256 * 256 + dat[[2]] * 256 + dat[[3]]) * 0.1)
-  projection(height) <- "+proj=merc +a=6378137 +b=6378137"
+  raster::projection(height) <- "+proj=merc +a=6378137 +b=6378137"
   height
 }
 ```
-## Rendering DEM image in 3D
+
+When we apply it to `tibrogargan_raster` we get:
+
+```{r, eval=FALSE}
+tibrogargan_elevation <- decode_elevation(tibrogargan_raster)
+raster::plot(tibrogargan_elevation)
+```
+
+![]("./tibrogargan_decoded.png")
+
+## Rendering DEM image
+
+### Rayshader
+
+```{r, eval=FALSE}
+library(magrittr)
+library(rayshader)
+
+elevation_mat <- t(raster::as.matrix(tibrogargan_elevation))
+
+shadow_mat <- ray_shade(elevation_mat)
+
+elevation_mat %>%
+  sphere_shade(progbar = FALSE, sunangle = 45) %>%
+  add_shadow(shadow_mat) %>%
+  plot_3d(elevation_mat,
+          zscale = 7,
+          phi = 30,
+          theta = 135)
+```
+
+![]("./tibrogargan_rayshade.png")
+
+### Quadmesh
+
+```{r, eval=FALSE}
+library(quadmesh)
+
+elevation_mesh <- quadmesh(tibrogargan_elevation)
+rgl::shade3d(elevation_mesh, col = "light green")
+```
+
+![]("./tribrogargan_quadmesh_rgl.png")
+
+## See Also
+
+*[ceramic](https://www.github.com/hypertidy/ceramic) - A wrapper for `quadmesh` + `slippymath` for making 3D surfaces textured with satellite tiles.
