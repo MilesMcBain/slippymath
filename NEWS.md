@@ -1,6 +1,6 @@
 # slippymath 0.3.0
 
-Many function name changes in preparation for CRAN submisson. *These will certainly break existing `slippymath` code*. 
+Many function name changes in preparation for CRAN submisson. **These will certainly break existing `slippymath` code**. 
 
 I have gone with a more explicit API since I feel users will mainly use
 `slippymath` under the hood as a dependency. Therefore it is important they can
