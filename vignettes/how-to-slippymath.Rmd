@@ -47,7 +47,7 @@ uluru_bbox <-
       ymin = -25.35461,
       ymax = -25.33568)
 
-bb_tile_query(uluru_bbox)
+bbox_tile_query(uluru_bbox)
 ```
 
 When choosing your zoom level consider: Tiles are 256 x 256 pixel squares which
@@ -67,13 +67,13 @@ budget).
 For example using the Uluru bounding box from above and zoom level 14:
 
 ```{r}
-bb_to_tg(uluru_bbox, zoom = 14)
+bbox_to_tile_grid(uluru_bbox, zoom = 14)
 ```
 
 And using the same bounding box with a budget of 15 tiles:
 
 ```{r}
-bb_to_tg(uluru_bbox, max_tiles = 15)
+bbox_to_tile_grid(uluru_bbox, max_tiles = 15)
 ```
 
 A tile grid is an object that contains a dataframe of tile coordinates (`$tiles`) and a `$zoom` level.
@@ -103,8 +103,8 @@ function, this is taken care of for you.
 Find the bounding boxes of a tile grid like so:
 
 ```{r}
-uluru_grid <- bb_to_tg(uluru_bbox, max_tiles = 15)
-tg_bbs(uluru_grid)
+uluru_grid <- bbox_to_tile_grid(uluru_bbox, max_tiles = 15)
+tile_grid_bboxes(uluru_grid)
 
 ## for a single tile use tg_bb()
 ```
@@ -124,7 +124,7 @@ files that correspond in order to the tiles in the tile grid. See the README
 example for a way to download tiles and get such a list.
 
 ```{r, eval=FALSE}
-raster_out <- tg_composite(tile_grid, images)
+raster_out <- compose_tile_grid(tile_grid, images)
 ```
 
 Finally a convenience function is provided to convert the raster to a .png if needed:

@@ -30,7 +30,7 @@ uluru_bbox <-
             ymax = -25.33568),
           crs = st_crs("+proj=longlat +ellps=WGS84"))
 
-bb_tile_query(uluru_bbox)
+bbox_tile_query(uluru_bbox)
 
 # A tibble: 17 x 8
 #    x_min  y_min  x_max  y_max y_dim x_dim total_tiles  zoom
@@ -58,7 +58,7 @@ Get a grid of slippy map tile coordinates for a bounding box, given a `zoom`, or
 guess a zoom given a `max_tiles`:
 
 ```r
-bb_to_tg(uluru_bbox, max_tiles = 15)
+bbox_to_tile_grid(uluru_bbox, max_tiles = 15)
 
 #$tiles
 #       x     y
@@ -92,7 +92,7 @@ library(purrr)
 library(curl)
 library(glue)
 
-tile_grid <- bb_to_tg(uluru_bbox, max_tiles = 15)
+tile_grid <- bbox_to_tilegrid(uluru_bbox, max_tiles = 15)
 
 mapbox_query_string <-
   paste0("https://api.mapbox.com/v4/mapbox.satellite/{zoom}/{x}/{y}.jpg90",
@@ -113,16 +113,16 @@ images <-
 
 ## Tile compositing
 
-You can composite a list of images and a corresponding tile grid to a spatially
+You can compose a list of images and a corresponding tile grid to a spatially
 referenced raster, meaning you can plot over it with `tmap` etc.
 
 ```r
 library(raster)
 library(rgdal)
 
-raster_out <- tg_composite(tile_grid, images)
+raster_out <- compose_tile_grid(tile_grid, images)
 
-## A convenient wrapper for raster image exports.
+## A convenient wrapper for raster image exports using rgdal.
 raster_to_png(raster_out, "uluru.png")
 
 ```

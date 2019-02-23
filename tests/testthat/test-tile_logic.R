@@ -4,7 +4,7 @@ context("test-tile_logic")
 test_that("tile cascade works", {
 
   bbox <-  c(xmin = -180, xmax = 180, ymin = -85.0511, ymax = 85.0511)
-  levs <- slippymath::bb_tile_query(bbox, zoom_levels = 0:19)
+  levs <- slippymath::bbox_tile_query(bbox, zoom_levels = 0:19)
 
   expect_equal(levs$zoom, 0:19)
   expect_equal(levs$total_tiles, (2^seq(0, 19))^2)
@@ -20,7 +20,7 @@ test_that("tile cascade works", {
 test_that("tile cascade smaller extent works", {
   bbox <-  c(xmin = 140, xmax = 150,
                        ymin = -43, ymax = -41)
-  levs_now <- slippymath::bb_tile_query(bbox, zoom_levels = 0:19)
+  levs_now <- slippymath::bbox_tile_query(bbox, zoom_levels = 0:19)
   #dput(levs)
   levs <- structure(list(x_min = c(0, 1, 3, 7, 14, 28, 56, 113, 227, 455,
                                    910, 1820, 3640, 7281, 14563, 29127, 58254, 116508, 233016, 466033),
@@ -40,7 +40,7 @@ test_that("tile cascade smaller extent works", {
 
 test_that("whole zoom 0 tile logic works", {
   bbox <-  c(xmin = -180, xmax = 180, ymin = -85.0511, ymax = 85.0511)
-  tg <- slippymath::bb_to_tg(bbox, zoom = 0)
+  tg <- slippymath::bbox_to_tile_grid(bbox, zoom = 0)
   tg %>% expect_s3_class("tile_grid") %>% expect_named(c("tiles", "zoom"))
   expect_true(nrow(tg$tiles) == 1L)
   expect_true(tg$zoom == 0)

@@ -45,9 +45,9 @@ test_that("bounding box calculation matches reference", {
                                     proj4string = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs"),
                                     class = "crs"))
 
-  tile_bbox <- tile_bb(x, y, 17)
+  bbox <- tile_bbox(x, y, 17)
 
-  expect_true(all.equal(reference_bbox, tile_bbox))
+  expect_true(all.equal(reference_bbox, bbox))
 })
 
 test_that("bounding box calculation for tiles at edge of domain works", {
@@ -56,7 +56,7 @@ test_that("bounding box calculation for tiles at edge of domain works", {
   lon = 150
 
   tile <- lonlat_to_tilenum(lon, lat, 1)
-  tile_bbox <- tile_bb(tile$x, tile$y, 1)
+  bbox <- tile_bbox(tile$x, tile$y, 1)
 
   expected_bbox <-
       structure(c(xmin = 0, ymin = 0, xmax = 20037508.34, ymax = 20037508.34),
@@ -66,6 +66,6 @@ test_that("bounding box calculation for tiles at edge of domain works", {
                                 class = "crs"))
 
   expect_true({
-    all.equal(tile_bbox, expected_bbox)
+    all.equal(bbox, expected_bbox)
   })
 })

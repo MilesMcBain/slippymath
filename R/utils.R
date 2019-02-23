@@ -47,7 +47,7 @@ raster_to_png <- function(tile_raster, file_path){
   }
 
   if (!inherits(tile_raster, "RasterBrick")){
-   stop("tile raster must me a RasterBrick. This is output from tg_composite().") 
+   stop("tile raster must me a RasterBrick. This is output from compose_tile_grid().") 
   }
   rgdal::writeGDAL(methods::as(tile_raster,
                       "SpatialGridDataFrame"),

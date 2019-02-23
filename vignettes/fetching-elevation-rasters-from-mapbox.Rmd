@@ -44,14 +44,14 @@ library(slippymath)
 tibrogargan<- c(xmin = 152.938485, ymin = -26.93345, xmax = 152.956467, 
                ymax = -26.921463)
 
-slippymath::bb_tile_query(tibrogargan)
+slippymath::bbox_tile_query(tibrogargan)
 
 ```
 
 It's a small area so we don't need a lot. 9 tiles as zoom 15 looks good. Let's get the tile grid.
 
 ```{r}
-tibrogargan_grid <- bb_to_tg(tibrogargan, zoom = 15)
+tibrogargan_grid <- bbox_to_tile_grid(tibrogargan,zoom = 15)
 ```
 
 Now we'll fetch the tiles from Mapbox. 
@@ -80,10 +80,10 @@ pmap(.l = tibrogargan_grid$tiles,
 ```
 ## Stitch tiles into a raster
 
-We composite the images to raster with `tg_composite` and view the raster:
+We composite the images to raster with `compose_tile_grid` and view the raster:
 
 ```{r, eval=FALSE}
-tibrogargan_raster <- slippymath::tg_composite(tibrogargan_grid, tibro_tiles)
+tibrogargan_raster <- slippymath::compose_tile_grid(tibrogargan_grid, tibro_tiles)
 raster::plot(tibrogargan_raster)
 ```
 `r knitr::include_graphics("tibrogargan_layers.png")`

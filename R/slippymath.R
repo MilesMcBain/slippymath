@@ -80,7 +80,7 @@ tilenum_to_lonlat <- function(x, y, zoom){
 ##' enforced and the function will fail if more tiles are required for the given
 ##' zoom.
 ##'
-##' @title bb_to_tg
+##' @title bbox_to_tile_grid
 ##' @param bbox the bounding box to fit onto a grid of tiles. Must be either a
 ##'   'bbox' object created with sf::st_bbox or a vector of length 4 with names:
 ##'   'xmin', 'xmax', 'ymin', 'ymax'.
@@ -88,7 +88,7 @@ tilenum_to_lonlat <- function(x, y, zoom){
 ##' @param max_tiles Optional. The maximum number of tiles the grid may occupy.
 ##' @return a 'tile_grid' object containing 'tiles' and 'zoom'
 ##' @export
-bb_to_tg <- function(bbox,
+bbox_to_tile_grid <- function(bbox,
                      zoom = NULL,
                      max_tiles = NULL){
 
@@ -98,12 +98,12 @@ bb_to_tg <- function(bbox,
 
     ## No zoom, we'll do a query and choose the best zoom for the max_tiles budget
     if (purrr::is_null(zoom)){
-        tile_query <- bb_tile_query(bbox, zoom_levels = 0:19)
+        tile_query <- bbox_tile_query(bbox, zoom_levels = 0:19)
         suitable_zooms <- tile_query$total_tiles <= max_tiles
         zoom <- tile_query$zoom[max(which(suitable_zooms))]
     }
 
-    tile_extent <- bb_tile_extent(bbox, zoom)
+    tile_extent <- bbox_tile_extent(bbox, zoom)
 
     x_tiles <- tile_extent$x_min:tile_extent$x_max
     y_tiles <- tile_extent$y_min:tile_extent$y_max
@@ -127,17 +127,17 @@ bb_to_tg <- function(bbox,
 ##'
 ##' Tiles are typically 256x256 pixels and are tens of Kb in size, you can get some sense of the data from the query also.
 ##'
-##' @title bb_tile_query
+##' @title bbox_tile_query
 ##' @param bbox a bbox object created by `sf::st_bbox`, or a vector with names
 ##'   'xmin', 'xmax', 'ymin', 'ymax'
 ##' @param zoom_levels a numeric vector of zoom levels to calculate tile usage for.
 ##' @return a data frame containing tile usage information for the bounding box
 ##'   at each zoom level.
 ##' @export
-bb_tile_query <- function(bbox, zoom_levels = 2:18){
+bbox_tile_query <- function(bbox, zoom_levels = 2:18){
 
     extents_at_zooms <- purrr::map(zoom_levels,
-                                   ~bb_tile_extent(bbox, .))
+                                   ~bbox_tile_extent(bbox, .))
 
     extents_at_zooms <- lol_to_df(extents_at_zooms)
 
@@ -158,13 +158,13 @@ bb_tile_query <- function(bbox, zoom_levels = 2:18){
 ##' returns the min and max x and y tile numbers for a tile grid that would fit
 ##' the bounding box for a given zoom level.
 ##'
-##' @title bb_tile_extent
+##' @title bbox_tile_extent
 ##' @param bbox a bbox object created by `sf::st_bbox`, or a vector with names
 ##'   'xmin', 'xmax', 'ymin', 'ymax'
 ##' @param zoom zoom level to calculate the tile grid on.
 ##' @return a list of `x_min`, `y_min`, `x_max`, `y_max`
 ##' @export
-bb_tile_extent <- function(bbox, zoom){
+bbox_tile_extent <- function(bbox, zoom){
     assert_bbox(bbox)
 
     min_tile <- lonlat_to_tilenum(lat_deg = bbox["ymin"],
@@ -188,13 +188,13 @@ bb_tile_extent <- function(bbox, zoom){
 ##' an `sf` bounding box object for the tile in degrees latitude and longitude using the EPSG:4326
 ##' coordinate reference system.
 ##'
-##' @title tile_bb
+##' @title tile_bbox
 ##' @param x slippy map tile x number
 ##' @param y slippy map tile y number
 ##' @param zoom zoom level for tile
 ##' @return an sf bbox object.
 ##' @export
-tile_bb <- function(x, y, zoom){
+tile_bbox <- function(x, y, zoom){
 
     bottom_left <-
         lonlat_to_merc(t(as.matrix(unlist(tilenum_to_lonlat(x, y+1, zoom)))))
@@ -215,28 +215,31 @@ tile_bb <- function(x, y, zoom){
 
 ##' Get tile grid bounding boxes
 ##'
-##' Given an tile_grid object like that returned from `bb_to_tg`, return a list
+##' Given an tile_grid object like that returned from `bbox_to_tile_grid`, return
+##' a list
 ##' of sf bounding box objects one for each tile in the grid, in the same order
 ##' as tiles in `tile_grid$tiles`.
 ##'
 ##' The bounding boxes use degrees latitude and longitude in the EPSG:4326
 ##' coordinate reference system.
 ##'
-##' @title tg_bbs
-##' @param tile_grid a tile_grid object, likely returned from `bb_to_tg`
-##' @return a list of sf bounding box objects in the corresponding order to the tiles in `tile_grid`
+##' @title tile_grid_bboxes
+##' @param tile_grid a tile_grid object, likely returned from `bbox_to_tile_grid`
+##' @return a list of sf bounding box objects in the corresponding order to the
+##'   tiles in `tile_grid`
 ##' @export
-tg_bbs <- function(tile_grid){
-    if(!is_tile_grid(tile_grid)) stop("tile_grid must be of class tile_grid - output from bb_to_tg()")
+tile_grid_bboxes <- function(tile_grid){
+    if(!is_tile_grid(tile_grid)) stop("tile_grid must be of class tile_grid - output from bbox_to_tile_grid()")
 
     purrr::pmap(.l = tile_grid$tiles,
-                .f = tile_bb,
+                .f = tile_bbox,
                 zoom = tile_grid$zoom)
 }
 
-##' Composite a list of images using tile_grid data.
+##' Compose a list of images using tile_grid data.
 ##'
-##' Given a tile_grid object and a list of images, composite the images into a spatially referenced RasterBrick object.
+##' Given a tile_grid object and a list of images, compose the images into a
+##' single spatially referenced RasterBrick object.
 ##'
 ##' The list of images is assumed to be in corresponding order to the tiles in
 ##' the tile_grid object.
@@ -244,24 +247,24 @@ tg_bbs <- function(tile_grid){
 ##' The returned object uses the Web Mercator projection, EPSG:3857, which is
 ##' the native crs of the tiles.
 ##'
-##' @title tg_composite
-##' @param tile_grid a tile_grid object, likely returned from `bb_to_tg`
+##' @title composite_tile_grid
+##' @param tile_grid a tile_grid object, likely returned from `bbox_to_tile_grid`
 ##' @param images a list of character strings defining paths to images. Matched to tiles in tile_grid based on list position.
 ##' @return a spatially referenced raster.
 ##' @export
-tg_composite <- function(tile_grid, images){
+compose_tile_grid <- function(tile_grid, images){
 
     bricks <-
         purrr::pmap(.l = list(x = tile_grid$tiles$x,
                               y = tile_grid$tiles$y,
                               image = images),
                     .f = function(x, y, image, zoom){
-                        tile_bbox <- tile_bb(x, y, zoom)
+                        bbox <- tile_bbox(x, y, zoom)
                         raster_img <-
                             raster::brick(image,
-                                          crs = attr(tile_bbox, "crs")$proj4string)
+                                          crs = attr(bbox, "crs")$proj4string)
                         raster::extent(raster_img) <-
-                            raster::extent(tile_bbox[c("xmin", "xmax", "ymin", "ymax")])
+                            raster::extent(bbox[c("xmin", "xmax", "ymin", "ymax")])
                         raster_img
                     },
                     zoom = tile_grid$zoom)
