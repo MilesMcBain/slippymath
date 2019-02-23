@@ -1,10 +1,10 @@
 ---
 title: "Fetching elevation data from Mapbox"
-author: "Vignette Author"
+author: "Miles McBain"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Fetching Elevation data from Mapbox}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -86,8 +86,7 @@ We composite the images to raster with `tg_composite` and view the raster:
 tibrogargan_raster <- slippymath::tg_composite(tibrogargan_grid, tibro_tiles)
 raster::plot(tibrogargan_raster)
 ```
-![]("./tibrogargan_layers.png")
-
+`r knitr::include_graphics("tibrogargan_layers.png")`
 
 We see this mix of layers including a psychedelic blue-green
 RGB landscape because in `terrain-rgb` tiles, the RGB values to provide
@@ -112,9 +111,10 @@ When we apply it to `tibrogargan_raster` we get:
 ```{r, eval=FALSE}
 tibrogargan_elevation <- decode_elevation(tibrogargan_raster)
 raster::plot(tibrogargan_elevation)
+
 ```
 
-![]("./tibrogargan_decoded.png")
+`r knitr::include_graphics("tibrogargan_decoded.png")`
 
 ## Rendering DEM image
 
@@ -137,7 +137,7 @@ elevation_mat %>%
           theta = 135)
 ```
 
-![]("./tibrogargan_rayshade.png")
+`r knitr::include_graphics("tibrogargan_rayshade.png")`
 
 ### Quadmesh
 
@@ -148,7 +148,7 @@ elevation_mesh <- quadmesh(tibrogargan_elevation)
 rgl::shade3d(elevation_mesh, col = "light green")
 ```
 
-![]("./tribrogargan_quadmesh_rgl.png")
+`r knitr::include_graphics("tibrogargan_quadmesh_rgl.png")`
 
 ## See Also
 
