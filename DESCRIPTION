@@ -12,6 +12,8 @@ Description: Provides functions for performing common tasks when working with
   georeferenced raster image.
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
+URL: https://www.github.com/milesmcbain/slippymath
+BugReports: https://www.github.com/milesmcbain/slippymath/issues
 Encoding: UTF-8
 LazyData: true
 Imports: 

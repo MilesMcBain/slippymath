@@ -41,7 +41,7 @@ merc_to_lonlat <- function(xy) {
 ##'
 ##' When doing maths with Mercator coordinates in m, you can end up outside the
 ##' Mercator extent with an undefined coordinate. This function returns true if
-##' all xy lie withib the Mercator extent.
+##' all xy lie within the Mercator extent.
 ##' @title within_mercator_extent
 ##' @param xy a matrix of Mercator xy coordinates.
 ##' @return TRUE or FALSE
