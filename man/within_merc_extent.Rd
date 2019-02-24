@@ -18,5 +18,5 @@ Are points in meters within Mercator extent?
 \details{
 When doing maths with Mercator coordinates in m, you can end up outside the
 Mercator extent with an undefined coordinate. This function returns true if
-all xy lie withib the Mercator extent.
+all xy lie within the Mercator extent.
 }
