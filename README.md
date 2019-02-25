@@ -127,6 +127,6 @@ raster_to_png(raster_out, "uluru.png")
 
 ```
 Result:
-![](media/uluru.png)
+![](inst/media/uluru.png)
 
 © <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>
