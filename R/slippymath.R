@@ -21,6 +21,12 @@ globalVariables(c(".global_sm_env"), "slippymath") #ignore this in R CMD checks
 ##' @param zoom zoom level for tile calculation. Increasing zoom increases the
 ##'   number of tiles.
 ##' @return a list containing `x` and `y` - the tile numbers.
+##' @examples
+##' lonlat_to_tilenum(
+##'  lon = 13.37771496361961,
+##'  lat = 52.51628011262304,
+##'  zoom = 17
+##' )
 ##' @export
 lonlat_to_tilenum <- function(lon_deg, lat_deg, zoom){
     ## Implementing slippy map spec as per https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
@@ -53,6 +59,12 @@ lonlat_to_tilenum <- function(lon_deg, lat_deg, zoom){
 ##' @param zoom the zoom level for the calculation. Increasing zoom increases
 ##'   the number of tiles.
 ##' @return a list containing `lat` and `lon` - latitude and longitude.
+##' @examples
+##' tilenum_to_lonlat(
+##'  x = 70406,
+##'  y = 42987,
+##'  zoom = 17
+##' )
 ##' @export
 tilenum_to_lonlat <- function(x, y, zoom){
     n_tiles <- 2^zoom
