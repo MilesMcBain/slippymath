@@ -19,3 +19,11 @@ Truncate coordinate to Mercator extent.
 If a point in m lies outside the Mercator extent, this function can be used
 to truncate it to the boundary of the extent.
 }
+\examples{
+stray <- matrix(c(20037509,
+                   -2918162.223463),
+                 nrow = 1)
+
+merc_truncate(stray)
+
+}

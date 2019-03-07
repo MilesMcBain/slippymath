@@ -20,3 +20,16 @@ matrix of coordinates transformed forward or inverse
 \description{
 Transform between spherical Mercator and longitude/latitude
 }
+\examples{
+uluru_lonlat <- matrix(c(131.0325162,
+                         -25.3448562),
+                       nrow = 1)
+
+lonlat_to_merc(uluru_lonlat)
+
+uluru_merc <- matrix(c(14586472.958481,
+                       -2918162.223463),
+                     nrow = 1)
+
+merc_to_lonlat(uluru_merc)
+}

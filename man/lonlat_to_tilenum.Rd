@@ -27,3 +27,10 @@ supplied latitude and longitude fall on, for a given zoom level.
 The point specified by lon_deg` and `lat_deg` is assumed to be in ESPG:4326
 coordinate reference system.
 }
+\examples{
+lonlat_to_tilenum(
+ lon = 13.37771496361961,
+ lat = 52.51628011262304,
+ zoom = 17
+)
+}

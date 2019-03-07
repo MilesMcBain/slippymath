@@ -20,3 +20,10 @@ When doing maths with Mercator coordinates in m, you can end up outside the
 Mercator extent with an undefined coordinate. This function returns true if
 all xy lie within the Mercator extent.
 }
+\examples{
+stray <- matrix(c(20037509,
+                   -2918162.223463),
+                 nrow = 1)
+
+within_merc_extent(stray)
+}

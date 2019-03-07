@@ -19,9 +19,18 @@ Get tile grid bounding boxes
 \details{
 Given an tile_grid object like that returned from `bbox_to_tile_grid`, return
 a list
-of sf bounding box objects one for each tile in the grid, in the same order
+of sf style bounding box objects, one for each tile in the grid, in the same order
 as tiles in `tile_grid$tiles`.
 
-The bounding boxes use degrees latitude and longitude in the EPSG:4326
-coordinate reference system.
+The bounding box units are metres in the EPSG:3857 coordinate reference
+system (Web Mercator).
+}
+\examples{
+
+tibrogargan<- c(xmin = 152.938485, ymin = -26.93345, xmax = 152.956467, 
+               ymax = -26.921463)
+
+tibrogargan_grid <- bbox_to_tile_grid(tibrogargan, zoom = 15)
+
+tile_grid_bboxes(tibrogargan_grid)
 }

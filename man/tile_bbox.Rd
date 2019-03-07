@@ -21,6 +21,10 @@ Calculate the bounding box for a tile in latitude and longitude
 }
 \details{
 Given a slippy maps tile specified by `x`, `y`, and `zoom`, return the
-an `sf` bounding box object for the tile in degrees latitude and longitude using the EPSG:4326
-coordinate reference system.
+an `sf` bounding box object for the tile with units in metres using the
+EPSG:3857 coordinate reference system (Web Mercator).
+}
+\examples{
+## return an sf style bbox object in with epsg and proj4string
+tile_bbox(x = 30304, y = 18929, zoom = 15)
 }

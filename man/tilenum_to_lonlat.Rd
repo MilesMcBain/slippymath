@@ -24,3 +24,10 @@ Convert slippy map tiles numbers to latitude and longitude
 Returns the latitude and longitude of the top left corner of a slippy map tile
 specified by `x`, `y` for a given zoom level.
 }
+\examples{
+tilenum_to_lonlat(
+ x = 70406,
+ y = 42987,
+ zoom = 17
+)
+}

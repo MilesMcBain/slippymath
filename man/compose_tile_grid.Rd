@@ -2,7 +2,7 @@
 % Please edit documentation in R/slippymath.R
 \name{compose_tile_grid}
 \alias{compose_tile_grid}
-\title{composite_tile_grid}
+\title{compose_tile_grid}
 \usage{
 compose_tile_grid(tile_grid, images)
 }

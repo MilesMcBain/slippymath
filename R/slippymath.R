@@ -99,6 +99,15 @@ tilenum_to_lonlat <- function(x, y, zoom){
 ##' @param zoom Optional. The desired zoom level.
 ##' @param max_tiles Optional. The maximum number of tiles the grid may occupy.
 ##' @return a 'tile_grid' object containing 'tiles' and 'zoom'
+##' @examples
+##' tibrogargan<- c(xmin = 152.938485, ymin = -26.93345, xmax = 152.956467, 
+##'                ymax = -26.921463)
+##'
+##' ## Get a grid of the minimum number of tiles for a given zoom.
+##' bbox_to_tile_grid(tibrogargan, zoom = 15)
+##'
+##' ## get a grid of at most 12 tiles, choosing the most detailed zoom possible.
+##' bbox_to_tile_grid(tibrogargan, max_tiles = 12)
 ##' @export
 bbox_to_tile_grid <- function(bbox,
                      zoom = NULL,
@@ -145,6 +154,11 @@ bbox_to_tile_grid <- function(bbox,
 ##' @param zoom_levels a numeric vector of zoom levels to calculate tile usage for.
 ##' @return a data frame containing tile usage information for the bounding box
 ##'   at each zoom level.
+##' @examples
+##' tibrogargan<- c(xmin = 152.938485, ymin = -26.93345, xmax = 152.956467, 
+##'                ymax = -26.921463)
+##'
+##' bbox_tile_query(tibrogargan)
 ##' @export
 bbox_tile_query <- function(bbox, zoom_levels = 2:18){
 
@@ -175,6 +189,10 @@ bbox_tile_query <- function(bbox, zoom_levels = 2:18){
 ##'   'xmin', 'xmax', 'ymin', 'ymax'
 ##' @param zoom zoom level to calculate the tile grid on.
 ##' @return a list of `x_min`, `y_min`, `x_max`, `y_max`
+##' @examples
+##' tibrogargan<- c(xmin = 152.938485, ymin = -26.93345, xmax = 152.956467, 
+##'                ymax = -26.921463)
+##' bbox_tile_extent(tibrogargan, zoom = 15)
 ##' @export
 bbox_tile_extent <- function(bbox, zoom){
     assert_bbox(bbox)
@@ -197,14 +215,17 @@ bbox_tile_extent <- function(bbox, zoom){
 ##' Calculate the bounding box for a tile in latitude and longitude
 ##'
 ##' Given a slippy maps tile specified by `x`, `y`, and `zoom`, return the
-##' an `sf` bounding box object for the tile in degrees latitude and longitude using the EPSG:4326
-##' coordinate reference system.
+##' an `sf` bounding box object for the tile with units in metres using the
+##' EPSG:3857 coordinate reference system (Web Mercator).
 ##'
 ##' @title tile_bbox
 ##' @param x slippy map tile x number
 ##' @param y slippy map tile y number
 ##' @param zoom zoom level for tile
 ##' @return an sf bbox object.
+##' @examples
+##' ## return an sf style bbox object in with epsg and proj4string
+##' tile_bbox(x = 30304, y = 18929, zoom = 15)
 ##' @export
 tile_bbox <- function(x, y, zoom){
 
@@ -229,16 +250,24 @@ tile_bbox <- function(x, y, zoom){
 ##'
 ##' Given an tile_grid object like that returned from `bbox_to_tile_grid`, return
 ##' a list
-##' of sf bounding box objects one for each tile in the grid, in the same order
+##' of sf style bounding box objects, one for each tile in the grid, in the same order
 ##' as tiles in `tile_grid$tiles`.
 ##'
-##' The bounding boxes use degrees latitude and longitude in the EPSG:4326
-##' coordinate reference system.
+##' The bounding box units are metres in the EPSG:3857 coordinate reference
+##' system (Web Mercator).
 ##'
 ##' @title tile_grid_bboxes
 ##' @param tile_grid a tile_grid object, likely returned from `bbox_to_tile_grid`
 ##' @return a list of sf bounding box objects in the corresponding order to the
 ##'   tiles in `tile_grid`
+##' @examples
+##' 
+##' tibrogargan<- c(xmin = 152.938485, ymin = -26.93345, xmax = 152.956467, 
+##'                ymax = -26.921463)
+##' 
+##' tibrogargan_grid <- bbox_to_tile_grid(tibrogargan, zoom = 15)
+##'
+##' tile_grid_bboxes(tibrogargan_grid)
 ##' @export
 tile_grid_bboxes <- function(tile_grid){
     if(!is_tile_grid(tile_grid)) stop("tile_grid must be of class tile_grid - output from bbox_to_tile_grid()")
@@ -259,7 +288,7 @@ tile_grid_bboxes <- function(tile_grid){
 ##' The returned object uses the Web Mercator projection, EPSG:3857, which is
 ##' the native crs of the tiles.
 ##'
-##' @title composite_tile_grid
+##' @title compose_tile_grid
 ##' @param tile_grid a tile_grid object, likely returned from `bbox_to_tile_grid`
 ##' @param images a list of character strings defining paths to images. Matched to tiles in tile_grid based on list position.
 ##' @return a spatially referenced raster.

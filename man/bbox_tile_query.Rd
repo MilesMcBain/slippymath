@@ -24,3 +24,9 @@ Determines how many tiles the bounding box would occupy for a range of zooms. Us
 
 Tiles are typically 256x256 pixels and are tens of Kb in size, you can get some sense of the data from the query also.
 }
+\examples{
+tibrogargan<- c(xmin = 152.938485, ymin = -26.93345, xmax = 152.956467, 
+               ymax = -26.921463)
+
+bbox_tile_query(tibrogargan)
+}

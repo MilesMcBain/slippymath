@@ -3,7 +3,7 @@ globalVariables(c("A", "MAXEXTENT"), "slippymath") #ignore this in R CMD checks
 # Convert lon/lat values to 900913 x/y.
 A <- 6378137
 MAXEXTENT <- 20037508.342789244;
-# clamp values within range min/max
+##' clamp values within range min/max
 sm_clamp <- function(x, mn, mx) {
   x[x < mn] <- mn
   x[x > mx] <- mx
@@ -16,6 +16,18 @@ sm_clamp <- function(x, mn, mx) {
 #' @param ll matrix of longitude / latitude
 #' @param xy matrix of x / y Mercator
 #' @return matrix of coordinates transformed forward or inverse
+#' @examples
+#' uluru_lonlat <- matrix(c(131.0325162,
+#'                          -25.3448562),
+#'                        nrow = 1)
+#'
+#' lonlat_to_merc(uluru_lonlat)
+#'
+#' uluru_merc <- matrix(c(14586472.958481,
+#'                        -2918162.223463),
+#'                      nrow = 1)
+#'
+#' merc_to_lonlat(uluru_merc)
 #' @export
 #' @aliases merc_to_lonlat
 lonlat_to_merc <- function(ll) {
@@ -45,6 +57,12 @@ merc_to_lonlat <- function(xy) {
 ##' @title within_mercator_extent
 ##' @param xy a matrix of Mercator xy coordinates.
 ##' @return TRUE or FALSE
+##' @examples
+##' stray <- matrix(c(20037509,
+##'                    -2918162.223463),
+##'                  nrow = 1)
+##'
+##' within_merc_extent(stray)
 ##' @export
 within_merc_extent <- function(xy){
   all(xy <= MAXEXTENT) & all(xy >= -MAXEXTENT)
@@ -54,14 +72,20 @@ within_merc_extent <- function(xy){
 ##'
 ##' If a point in m lies outside the Mercator extent, this function can be used
 ##' to truncate it to the boundary of the extent.
-##' 
+##'
 ##' @title merc_truncate
 ##' @param xy a matrix of Mercator XY points.
 ##' @return a matrix of XY points.
+##' @examples
+##' stray <- matrix(c(20037509,
+##'                    -2918162.223463),
+##'                  nrow = 1)
+##'
+##' merc_truncate(stray)
+##'
 ##' @export
 merc_truncate <- function(xy){
   xy[, 1] <- sm_clamp(xy[, 1], -MAXEXTENT, MAXEXTENT)
   xy[, 2] <- sm_clamp(xy[, 2], -MAXEXTENT, MAXEXTENT)
   xy
 }
-

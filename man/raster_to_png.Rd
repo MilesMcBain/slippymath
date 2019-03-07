@@ -18,11 +18,9 @@ nothing.
 Write a raster to PNG
 }
 \details{
-This function is a convenience wrapper for some `rgdal` functionality for
-writing rasters in PNG format.
-
-To use it you will need to have `rgdal` installed - it will not be installed
-automatically with `slippymath`. It is assumed spatially referenced raster
-output from composite_tile_grid() will be the product most users are looking
-for.
+This function is a convenience wrapper for writing RasterBricks output from
+`compose_tile_grid()` in PNG format.
+}
+\author{
+Michael Sumner
 }
