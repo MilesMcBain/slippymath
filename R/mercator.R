@@ -3,7 +3,7 @@ globalVariables(c("A", "MAXEXTENT"), "slippymath") #ignore this in R CMD checks
 # Convert lon/lat values to 900913 x/y.
 A <- 6378137
 MAXEXTENT <- 20037508.342789244;
-##' clamp values within range min/max
+# clamp values within range min/max
 sm_clamp <- function(x, mn, mx) {
   x[x < mn] <- mn
   x[x > mx] <- mx

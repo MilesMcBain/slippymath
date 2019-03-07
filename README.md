@@ -92,7 +92,7 @@ library(purrr)
 library(curl)
 library(glue)
 
-tile_grid <- bbox_to_tilegrid(uluru_bbox, max_tiles = 15)
+tile_grid <- bbox_to_tile_grid(uluru_bbox, max_tiles = 15)
 
 mapbox_query_string <-
   paste0("https://api.mapbox.com/v4/mapbox.satellite/{zoom}/{x}/{y}.jpg90",
