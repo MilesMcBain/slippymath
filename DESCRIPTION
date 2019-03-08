@@ -20,7 +20,6 @@ Imports:
     raster,
     purrr,
     stats,
-    methods,
     png
 Suggests: 
     testthat,
