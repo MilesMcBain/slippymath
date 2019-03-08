@@ -20,9 +20,9 @@ Imports:
     raster,
     purrr,
     stats,
-    methods
+    methods,
+    png
 Suggests: 
-    rgdal,
     testthat,
     knitr,
     rmarkdown

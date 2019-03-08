@@ -26,14 +26,9 @@ sp_bbox_to_sf <- function(sp_bbox) {
 
 ##' Write a raster to PNG
 ##'
-##' This function is a convenience wrapper for some `rgdal` functionality for
+##' This function is a convenience wrapper for
 ##' writing rasters in PNG format.
 ##'
-##' To use it you will need to have `rgdal` installed - it will not be installed
-##' automatically with `slippymath`. It is assumed spatially referenced raster
-##' output from composite_tile_grid() will be the product most users are looking
-##' for.
-##' 
 ##' @title raster_to_png
 ##' @param tile_raster the raster to write to PNG
 ##' @param file_path the path to write the raster
@@ -41,18 +36,19 @@ sp_bbox_to_sf <- function(sp_bbox) {
 ##' @export
 raster_to_png <- function(tile_raster, file_path){
 
-  if (!requireNamespace("rgdal", quietly = TRUE)) {
-    stop("Package \"rgdal\" is needed for this function to work. Please install it.",
-         call. = FALSE)
+  if (!inherits(tile_raster, "RasterBrick")){
+    stop("tile raster must be a RasterBrick. This is output from tg_composite().") 
   }
 
-  if (!inherits(tile_raster, "RasterBrick")){
-   stop("tile raster must me a RasterBrick. This is output from compose_tile_grid().") 
-  }
-  rgdal::writeGDAL(methods::as(tile_raster,
-                      "SpatialGridDataFrame"),
-                   file_path,
-                   driver = "PNG")
+  ## png expects 0-1 values, so normalise:
+  tile_raster@data@values <-
+    sweep(tile_raster@data@values,
+          MARGIN = 1,
+          STATS = tile_raster@data@max,
+          FUN = "/")
+
+  png::writePNG(raster::as.array(tile_raster),
+                target = file_path)
 }
 
 

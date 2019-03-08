@@ -18,9 +18,6 @@ nothing.
 Write a raster to PNG
 }
 \details{
-This function is a convenience wrapper for writing RasterBricks output from
-`compose_tile_grid()` in PNG format.
-}
-\author{
-Michael Sumner
+This function is a convenience wrapper for
+writing rasters in PNG format.
 }
