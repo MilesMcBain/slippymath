@@ -41,13 +41,13 @@ raster_to_png <- function(tile_raster, file_path){
   }
 
   ## png expects 0-1 values, so normalise:
-  tile_raster@data@values <-
-    sweep(tile_raster@data@values,
-          MARGIN = 1,
+  normalised_raster <-
+    sweep(raster::as.array(tile_raster),
+          MARGIN = 3,
           STATS = tile_raster@data@max,
           FUN = "/")
 
-  png::writePNG(raster::as.array(tile_raster),
+  png::writePNG(normalised_raster,
                 target = file_path)
 }
 
