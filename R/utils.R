@@ -40,17 +40,25 @@ raster_to_png <- function(tile_raster, file_path){
     stop("tile raster must be a RasterBrick. This is output from tg_composite().") 
   }
 
+  if (!(raster::nlayers(tile_raster) %in% c(1,3,4))){
+    stop("tile raster in unrecognised format - nlayers is not 1,3, or 4).")
+  }
+
   ## png expects 0-1 values, so normalise:
   normalised_raster <-
-    sweep(raster::as.array(tile_raster),
-          MARGIN = 3,
-          STATS = tile_raster@data@max,
-          FUN = "/")
+    normalise_raster(tile_raster)
 
   png::writePNG(normalised_raster,
                 target = file_path)
 }
 
+
+normalise_raster <- function(a_raster){
+  sweep(raster::as.array(a_raster),
+        MARGIN = 3,
+        STATS = a_raster@data@max,
+        FUN = "/")
+}
 
 lol_to_df <- function(lol){
   lov <- purrr::map(purrr::transpose(lol), unlist)
