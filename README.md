@@ -12,7 +12,11 @@ mapping!
 # Installation
 
 ```r
-devtools::install_github("milesmcbain/slippymath")
+## Dev version
+remotes::install_github("milesmcbain/slippymath")
+
+## CRAN version
+install.packages('slippymath')
 ```
 
 # Usage
@@ -122,7 +126,7 @@ library(rgdal)
 
 raster_out <- compose_tile_grid(tile_grid, images)
 
-## A convenient wrapper for raster image exports using rgdal.
+## A convenient wrapper for raster image exports using png::writePNG.
 raster_to_png(raster_out, "uluru.png")
 
 ```

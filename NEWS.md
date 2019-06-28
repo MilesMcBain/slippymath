@@ -1,3 +1,7 @@
+# slippymath 0.3.1
+
+* Fixed a bug in `raster_to_png()` that corrupted the output in some cases.
+
 # slippymath 0.3.0
 
 Many function name changes in preparation for CRAN submisson. **These will certainly break existing `slippymath` code**. 
