@@ -18,7 +18,7 @@ is_tile_grid <- function(obj) inherits(obj, "tile_grid")
 assert_bbox <- function(obj){
   if (!is_bbox(obj)){
     stop("bbox needs to be created with st_bbox() or be a named numeric vector with names: xmin, xmax, ymin, and ymax")
-  } 
+  }
 }
 sp_bbox_to_sf <- function(sp_bbox) {
   stats::setNames(as.vector(sp_bbox), c("xmin", "ymin", "xmax", "ymax"))
@@ -37,7 +37,7 @@ sp_bbox_to_sf <- function(sp_bbox) {
 raster_to_png <- function(tile_raster, file_path){
 
   if (!inherits(tile_raster, "RasterBrick")){
-    stop("tile raster must be a RasterBrick. This is output from tg_composite().") 
+    stop("tile raster must be a RasterBrick. This is output from tg_composite().")
   }
 
   if (!(raster::nlayers(tile_raster) %in% c(1,3,4))){
@@ -62,5 +62,5 @@ normalise_raster <- function(a_raster){
 
 lol_to_df <- function(lol){
   lov <- purrr::map(purrr::transpose(lol), unlist)
-  purrr::lift_dl(data.frame)(lov)
+  do.call(data.frame, lov)
 }
