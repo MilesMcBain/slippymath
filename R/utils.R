@@ -62,5 +62,5 @@ normalise_raster <- function(a_raster){
 
 lol_to_df <- function(lol){
   lov <- purrr::map(purrr::transpose(lol), unlist)
-  purrr::lift_dl(data.frame)(lov)
+  do.call(data.frame, lov)
 }
